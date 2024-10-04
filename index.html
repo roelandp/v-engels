@@ -162,7 +162,7 @@
 
         function nextQuestion() {
             currentQuestion = (currentQuestion + 1) % questions.length;
-            document.getElementById('question').textContent = `Wat betekent <b>${questions[currentQuestion].english}</b> in het Nederlands?`;
+            document.getElementById('question').innerHTML = `Wat betekent <b>${questions[currentQuestion].english}</b> in het Nederlands?`;
             lemming.classList.remove('fall'); // reset for next round
 
             // Randomize buttons
