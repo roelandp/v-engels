@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macabre Vocabulary Game</title>
+    
+    <!-- Voeg het manifest toe voor PWA ondersteuning -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Voeg het custom webfont en icon toe -->
+    <link rel="icon" type="image/png" href="icon.png">
+    
+    <style>
+        @font-face {
+            font-family: 'SchoolschriftLG';
+            src: url('schoolschriftlg.woff') format('woff');
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #game-container {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .lemming {
+            width: 50px;
+            height: 50px;
+            margin: 10px auto;
+            background-color: grey;
+            position: relative;
+            transition: transform 1s ease;
+        }
+
+        .ravine {
+            height: 150px;
+            width: 300px;
+            background-color: brown;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .fall {
+            animation: fall 1s forwards;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(0); }
+            to { transform: translateY(150px); }
+        }
+
+        /* Style the input field with a single underline and large uppercase text */
+        input[type="text"] {
+            font-family: 'SchoolschriftLG', sans-serif;
+            font-size: 36px;
+            width: 80%;
+            padding: 10px;
+            margin: 20px auto;
+            display: block;
+            border: none;
+            border-bottom: 2px solid #333;
+            outline: none;
+            background-color: transparent;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #score {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+
+        /* Style for the error list */
+        #error-list {
+            color: red;
+            margin: 20px;
+            font-size: 18px;
+        }
+
+        .correct-answer {
+            font-weight: bold;
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>V English Game</h1>
+        <p id="question">Wat is het Engelse woord voor: <b>jongen</b></p>
+
+        <!-- Inputveld voor het antwoord -->
+        <input type="text" id="answerInput" placeholder="Schrijf hier het Engelse woord">
+        
+        <!-- Submit-knop -->
+        <button onclick="checkAnswer()">Verstuur</button>
+
+        <div class="lemming" id="lemming">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="20" fill="grey" />
+                <circle cx="25" cy="18" r="5" fill="white" />
+                <circle cx="25" cy="18" r="2" fill="black" />
+                <rect x="22" y="25" width="6" height="15" fill="blue" />
+            </svg>
+        </div>
+        <div class="ravine"></div>
+
+        <p>Score: <span id="score">0</span></p>
+
+        <!-- Voeg foutmeldingslijst toe -->
+        <div id="error-list"></div>
+    </div>
+
+    <!-- Voeg de audiobestanden toe -->
+    <audio id="correct-sound" src="antwoord-goed.mp3" preload="auto"></audio>
+    <audio id="wrong-sound" src="antwoord-fout.mp3" preload="auto"></audio>
+
+    <script>
+        let score = 0;
+        let currentQuestion = 0;
+        let usedQuestions = [];
+
+        const questions = [
+            { english: 'boy', dutch: 'jongen' },
+            { english: 'girl', dutch: 'meisje' },
+            { english: 'dad', dutch: 'papa' },
+            { english: 'mum', dutch: 'mama' },
+            { english: 'child', dutch: 'kind' },
+            { english: 'hundred', dutch: 'honderd' },
+            { english: 'name', dutch: 'naam' },
+            { english: 'sheep', dutch: 'schaap, schapen' },
+            { english: 'teacher', dutch: 'meester, juf' },
+            { english: 'year', dutch: 'jaar' },
+            { english: 'America', dutch: 'Amerika' },
+            { english: 'South Africa', dutch: 'Zuid Afrika' },
+            { english: 'England', dutch: 'Engeland' },
+            { english: 'Italy', dutch: 'Italië' },
+            { english: 'the Netherlands', dutch: 'Nederland' },
+            { english: 'country', dutch: 'land' },
+            { english: 'number', dutch: 'nummer' },
+            { english: 'money', dutch: 'geld' },
+            { english: 'to count', dutch: 'tellen' },
+            { english: 'world', dutch: 'wereld' },
+            { english: 'Belgium', dutch: 'België' },
+            { english: 'Turkey', dutch: 'Turkije' },
+            { english: 'email', dutch: 'email' },
+            { english: 'letter', dutch: 'brief' },
+            { english: 'man', dutch: 'man' },
+            { english: 'woman', dutch: 'vrouw' },
+            { english: 'street', dutch: 'straat' },
+            { english: 'to live', dutch: 'wonen' },
+            { english: 'friend', dutch: 'vriend' },
+            { english: 'people', dutch: 'mensen' }
+        ];
+
+        const lemming = document.getElementById('lemming');
+        const correctSound = document.getElementById('correct-sound');
+        const wrongSound = document.getElementById('wrong-sound');
+        const errorList = document.getElementById('error-list');
+
+        // Function to shuffle the questions randomly
+        function shuffleQuestions() {
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
+
+        function checkAnswer() {
+            const answer = document.getElementById('answerInput').value;
+            const correctAnswer = questions[currentQuestion].english;
+
+            if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
+                score++;
+                document.getElementById('score').textContent = score;
+                correctSound.play();
+                lemming.classList.add('fall'); // animate falling lemming
+                setTimeout(() => {
+                    nextQuestion();
+                }, 1000);
+            } else {
+                wrongSound.play();
+                // Voeg fout toe aan foutlijst
+                errorList.innerHTML += `<p>❌ <span style="color:red;">${answer}</span> ✅ <span class="correct-answer">${correctAnswer}</span></p>`;
+                nextQuestion();
+            }
+
+            document.getElementById('answerInput').value = ''; // Clear the input field
+        }
+
+        function nextQuestion() {
+            if (usedQuestions.length === questions.length) {
+                usedQuestions = [];
+                shuffleQuestions();
+            }
+
+            currentQuestion = usedQuestions.length;
+            usedQuestions.push(questions[currentQuestion]);
+
+            document.getElementById('question').innerHTML = `Schrijf in het Engels: <b>${questions[currentQuestion].dutch}</b>`;
+            lemming.classList.remove('fall'); // reset for next round
+        }
+
+        // Shuffle the questions on game start
+        shuffleQuestions();
+        nextQuestion();
+    </script>
+
+</body>
+</html>
