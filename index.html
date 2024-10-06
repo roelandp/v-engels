@@ -272,7 +272,7 @@
             const answer = document.getElementById('answerInput').value.trim();
             const correctAnswer = questions[currentQuestion].english;
 
-            if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
+            if (answer === correctAnswer) {
                 score++;
                 document.getElementById('score').textContent = score;
                 correctSound.play();
