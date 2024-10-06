@@ -7,21 +7,6 @@
     
     <!-- Voeg het manifest toe voor PWA ondersteuning -->
     <link rel="manifest" href="manifest.json">
-
-        <!-- Splash screens for different iPad sizes -->
-    <link rel="apple-touch-startup-image" href="splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash-2732x2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
-    
-    <link rel="apple-touch-startup-image" href="splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash-2388x1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
-    
-    <link rel="apple-touch-startup-image" href="splash-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash-2224x1668.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
-    
-    <link rel="apple-touch-startup-image" href="splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash-2048x1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
-
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -56,7 +41,7 @@
             width: 50px;
             height: 50px;
             margin: 10px auto;
-            background-color: grey;
+            background-color: transparent;
             position: relative;
             transition: transform 1s ease;
         }
@@ -68,6 +53,32 @@
             position: relative;
             margin: 0 auto;
         }
+
+        .fire {
+    height: 150px;
+    width: 300px;
+    background: linear-gradient(to top, #ff4500, #ff8c00, #ffd700);
+    position: relative;
+    margin: 0 auto;
+    border-radius: 50%;
+    box-shadow: 0 0 50px rgba(255, 69, 0, 0.8), 0 0 100px rgba(255, 140, 0, 0.5);
+    animation: flicker 1.5s infinite alternate;
+}
+
+@keyframes flicker {
+    0% {
+        box-shadow: 0 0 50px rgba(255, 69, 0, 0.8), 0 0 100px rgba(255, 140, 0, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 70px rgba(255, 69, 0, 0.9), 0 0 120px rgba(255, 140, 0, 0.6);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(255, 69, 0, 0.7), 0 0 80px rgba(255, 140, 0, 0.4);
+        transform: scale(1);
+    }
+}
 
         .fall {
             animation: fall 1s forwards;
@@ -134,20 +145,43 @@
         <p id="question">Wat is het Engelse woord voor: <b>jongen</b></p>
 
         <!-- Inputveld voor het antwoord -->
-        <input type="text" id="answerInput" placeholder="Schrijf hier het Engelse woord" autocapitalize="none">
+        <input type="text" id="answerInput" placeholder="Schrijf hier het Engelse woord">
         
         <!-- Submit-knop -->
         <button onclick="checkAnswer()">Verstuur</button>
 
         <div class="lemming" id="lemming">
-            <svg width="50" height="50" viewBox="0 0 50 50">
-                <circle cx="25" cy="25" r="20" fill="grey" />
-                <circle cx="25" cy="18" r="5" fill="white" />
-                <circle cx="25" cy="18" r="2" fill="black" />
-                <rect x="22" y="25" width="6" height="15" fill="blue" />
+            <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                <!-- Body -->
+                <ellipse cx="25" cy="30" rx="15" ry="10" fill="#0437F2" />
+                
+                <!-- Head -->
+                <circle cx="25" cy="20" r="9" fill="#0437F2" />
+                
+                <!-- Face details -->
+                <!-- Eyes -->
+                <circle cx="21" cy="17" r="2" fill="white" />
+                <circle cx="29" cy="17" r="2" fill="white" />
+                <circle cx="21" cy="17" r="1" fill="black" />
+                <circle cx="29" cy="17" r="1" fill="black" />
+            
+                <!-- Nose -->
+                <circle cx="25" cy="22" r="1.5" fill="black" />
+            
+                <!-- Ears -->
+                <circle cx="18" cy="14" r="3" fill="#0437F2" />
+                <circle cx="32" cy="14" r="3" fill="#0437F2" />
+            
+                <!-- Feet -->
+                <ellipse cx="20" cy="40" rx="4" ry="2" fill="#805533" />
+                <ellipse cx="30" cy="40" rx="4" ry="2" fill="#805533" />
+            
+                <!-- Tail -->
+                <path d="M35,37 Q42,35 45,40" stroke="#0437F2" stroke-width="1.5" fill="none" />
             </svg>
+            
         </div>
-        <div class="ravine"></div>
+        <div class="fire"></div>
 
         <p>Score: <span id="score">0</span></p>
 
@@ -156,7 +190,7 @@
     </div>
 
     <!-- Voeg de audiobestanden toe -->
-    <audio id="correct-sound" src="antwoord-goed.mp3" preload="auto"></audio>
+    <audio id="correct-sound" src="viggoja.m4a" preload="auto"></audio>
     <audio id="wrong-sound" src="antwoord-fout.mp3" preload="auto"></audio>
 
     <script>
@@ -211,7 +245,7 @@
         }
 
         function checkAnswer() {
-            const answer = document.getElementById('answerInput').value.trim();
+            const answer = document.getElementById('answerInput').value;
             const correctAnswer = questions[currentQuestion].english;
 
             if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
