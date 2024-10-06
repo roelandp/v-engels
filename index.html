@@ -196,7 +196,7 @@
         }
 
         function checkAnswer() {
-            const answer = document.getElementById('answerInput').value;
+            const answer = document.getElementById('answerInput').value.trim();
             const correctAnswer = questions[currentQuestion].english;
 
             if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
